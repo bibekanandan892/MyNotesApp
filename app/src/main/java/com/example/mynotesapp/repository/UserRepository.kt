@@ -14,12 +14,10 @@ import javax.inject.Inject
 
 class UserRepository  @Inject constructor(private val userAPI: UserAPI) {
     private val _signUpRes= MutableLiveData<NetworkResult<SignUpRes>>()
-
     val signUpRes : LiveData<NetworkResult<SignUpRes>>
     get() = _signUpRes
 
     private val _signInRes = MutableLiveData<NetworkResult<SignInRes>>()
-
     val signInRes: LiveData<NetworkResult<SignInRes>>
     get() = _signInRes
 
@@ -44,7 +42,7 @@ class UserRepository  @Inject constructor(private val userAPI: UserAPI) {
         val response= userAPI.signIn(signInReq)
         if (response.isSuccessful && response.body() != null) {
             _signInRes.value = NetworkResult.Success(response.body()!!)
-        } else if (response.errorBody() !== null) {
+        } else if (response.errorBody() != null) {
             val errorObj = JSONObject(response.errorBody()!!.charStream().readText())
             _signInRes.value = NetworkResult.Error(errorObj.getString("message"))
         } else {

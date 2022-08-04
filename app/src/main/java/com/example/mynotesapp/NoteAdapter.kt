@@ -1,17 +1,22 @@
 package com.example.mynotesapp
 
-import android.widget.ListAdapter
+import android.view.LayoutInflater
+import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mynotesapp.databinding.NoteItemBinding
 import com.example.mynotesapp.model.note.NoteResponse
 
-class NoteAdapter () : ListAdapter<NoteResponse, NoteAdapter.NoteViewHolder>(ComparatorDiffUtil()){
+class NoteAdapter(private val onNoteClicked: (NoteResponse) -> Unit) : ListAdapter<NoteResponse, NoteAdapter.NoteViewHolder>(ComparatorDiffUtil()){
     inner class NoteViewHolder(private val binding : NoteItemBinding):
             RecyclerView.ViewHolder(binding.root){
                 fun bind(note : NoteResponse){
                     binding.title.text= note.title
-                    binding.desc.text=note.title
+                    binding.desc.text=note.description
+                    binding.root.setOnClickListener {
+                        onNoteClicked(note)
+                    }
                 }
             }
     class ComparatorDiffUtil : DiffUtil.ItemCallback<NoteResponse>() {
@@ -23,5 +28,17 @@ class NoteAdapter () : ListAdapter<NoteResponse, NoteAdapter.NoteViewHolder>(Com
             return oldItem == newItem
         }
 
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder {
+        val binding = NoteItemBinding.inflate(LayoutInflater.from(parent.context),parent,false)
+        return NoteViewHolder(binding)
+    }
+
+    override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
+        val note = getItem(position)
+        note?.let {
+            holder.bind(it)
+        }
     }
 }
